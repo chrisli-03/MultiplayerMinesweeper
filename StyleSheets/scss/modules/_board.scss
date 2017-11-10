@@ -1,6 +1,14 @@
 .board {
-  grid-column-start: 3;
+  box-shadow: 0px 0px 0px 1px black inset;
+  
+  grid-column-start: 2;
   grid-column-end: 10;
   grid-row-start: 2;
-  grid-row-end: 9;
+  grid-row-end: 10;
+
+  display: grid;
+  grid-template-columns: repeat(40, 1fr);
+  grid-template-rows: repeat(40, 1fr);
+
+  padding: 3px;
 }
