@@ -1,0 +1,10 @@
+.wrapper {
+  width: 80%;
+  height: 90%;
+  margin: auto;
+  position: relative;
+
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
