@@ -34,7 +34,159 @@ for (var i = 0; i < 4; i++) {
   };
 }
 
+/*
+function isValidPosForMine(row, col) {
+  if (row == 0) {
+    if (col == 0) {
+      if ((board[row+1][col] != "mine")
+          ||(board[row+1][col+1] != "mine")
+          ||(board[row][col+1] != "mine")) {
+            return true;
+          }
+    } else if (col == 40) {
+      if ((board[row+1][col] != "mine")
+          ||(board[row+1][col-1] != "mine")
+          ||(board[row][col-1] != "mine")) {
+            return true;
+          }
+    } else {
+      if ((board[row+1][col] != "mine")
+          ||(board[row+1][col+1] != "mine")
+          ||(board[row+1][col-1] != "mine")
+          ||(board[row][col-1] != "mine")
+          ||(board[row][col+1] != "mine")) {
+            return true;
+          }
+    }
+  }
+  if (row == 40) {
+    if (col == 0) {
+      if (
+          ||(board[row][col+1] != "mine")
+          ||(board[row-1][col+1] != "mine")
+          ||(board[row-1][col] != "mine")) {
+            return true;
+          }
+    } else if (col == 40) {
+      if ((board[row][col-1] != "mine")
+          ||(board[row-1][col] != "mine")
+          ||(board[row-1][col-1] != "mine")) {
+            return true;
+          }
+    } else {
+      if ((board[row][col-1] != "mine")
+          ||(board[row][col+1] != "mine")
+          ||(board[row-1][col+1] != "mine")
+          ||(board[row-1][col] != "mine")
+          ||(board[row-1][col-1] != "mine")) {
+            return true;
+          }
+    }
+  } else {
+    if (col == 0) {
+      if ((board[row+1][col] != "mine")
+          ||(board[row+1][col+1] != "mine")
+          ||(board[row][col+1] != "mine")
+          ||(board[row-1][col+1] != "mine")
+          ||(board[row-1][col] != "mine")) {
+            return true;
+          }
+    } else if (col == 40) {
+      if ((board[row][col-1] != "mine")
+          ||(board[row+1][col-1] != "mine")
+          ||(board[row+1][col] != "mine")
+          ||(board[row-1][col] != "mine")
+          ||(board[row-1][col-1] != "mine")) {
+            return true;
+          }
+    } else {
+      if ((board[row][col-1] != "mine")
+          ||(board[row+1][col-1] != "mine")
+          ||(board[row+1][col] != "mine")
+          ||(board[row+1][col+1] != "mine")
+          ||(board[row][col+1] != "mine")
+          ||(board[row-1][col+1] != "mine")
+          ||(board[row-1][col] != "mine")
+          ||(board[row-1][col-1] != "mine")) {
+            return true;
+          }
+    }
+  }
+  return false;
+}*/
+
 var board = [];
+// setup board
+function setupBoard() {
+  board = [];
+  // setup all cells
+  for (var i = 0; i <= 41; i++) {
+    var row = [];
+    for (var j = 0; j <= 41; j++) {
+      var cell = {};
+      if ((i == 1)||(i == 40)||(j == 1)||(j == 40)) {
+        if (((i == 1)||(i == 40))&&((j == 1)||(j == 40))) {
+          cell = {
+            player: "",
+            tile: "none",
+            breathe: 3
+          }
+        } else if ((i == 1)||(i == 40)) {
+          cell = {
+            player: "",
+            tile: "none",
+            breathe: 5
+          }
+        } else if ((j == 1)||(j == 40)) {
+          cell = {
+            player: "",
+            tile: "none",
+            breathe: 5
+          }
+        }
+      } else {
+        cell = {
+          player: "",
+          tile: "none",
+          breathe: 8
+        }
+      }
+      row.push(cell);
+    }
+    board.push(row);
+  }
+
+  // setup mines
+  for (var i = 0; i < 300; i++) {
+    var row = Math.floor((Math.random() * 40) +1);
+    var col = Math.floor((Math.random() * 40) +1);
+    if ((board[row][col].breathe > 0)
+        &&(board[row][col+1].breathe > 1)
+        &&(board[row][col-1].breathe > 1)
+        &&(board[row-1][col+1].breathe > 1)
+        &&(board[row-1][col].breathe > 1)
+        &&(board[row-1][col-1].breathe > 1)
+        &&(board[row+1][col+1].breathe > 1)
+        &&(board[row+1][col].breathe > 1)
+        &&(board[row+1][col-1].breathe > 1)) {
+          board[row][col].tile = "mine";
+          board[row][col+1].breathe--;
+          board[row][col-1].breathe--;
+          board[row-1][col+1].breathe--;
+          board[row-1][col].breathe--;
+          board[row-1][col-1].breathe--;
+          board[row+1][col+1].breathe--;
+          board[row+1][col].breathe--;
+          board[row+1][col-1].breathe--;
+        } else {
+          i--;
+        }
+  }
+}
+
+
+
+
 var clients = {};
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
@@ -55,6 +207,13 @@ io.on('connection', function(socket) {
     }
   });
 
+  // attack handler
+  socket.on('attack', function(id, fn) {
+    if ((players[id-1].online)&&(clients[socket.id] == id-1)) {
+      console.log("player " + (id-1) + " attacked!");
+    }
+  });
+
   // disconnect handler
   socket.on('disconnect', function() {
     if (clients[socket.id] != null) {
@@ -65,6 +224,7 @@ io.on('connection', function(socket) {
   });
 });
 
+setupBoard();
 // Send state of game to all clients
 setInterval(function() {
   io.sockets.emit('state', players, board);

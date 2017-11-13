@@ -3,6 +3,9 @@ var actionHUD = document.getElementsByClassName("action")[0];
 var inventory = document.getElementsByClassName("inventory")[0];
 var playerHUD = document.getElementsByClassName("status")[0];
 
+var moved = false;
+var moveSelected = false;
+
 function clearSelection() {
   for (var i = 0; i < cells.length; i++) {
     for (var j = 0; j < cells[i].length; j++) {
@@ -27,7 +30,8 @@ for (var i = 1; i <= 40; i++) {
                                 + "grid-row-end: " + (i+1) + ";");
 
 
-    cell.className = "" + i + " " + j;
+    cell.id = "" + i + " " + j;
+    cell.className = "cell";
     cell.addEventListener("click", function() { clearSelection(); this.style.backgroundColor = "red"; });
     row.push(cell);
     board.appendChild(cell);
@@ -74,7 +78,24 @@ for (var i = 1; i <= 2; i++) {
   var text = document.createElement("P");
   text.innerHTML = texts[i-1];
   action.appendChild(text);
-  action.addEventListener("click", function(){ clearSelection(); this.style.backgroundColor = "red"; });
+  if (i == 1) {
+    action.addEventListener("click", function() {
+      if (!moved) {
+        clearSelection();
+        moved = true;
+        sendAttack();
+        this.style.backgroundColor = "red";
+        moveSelected = false;
+      }
+    });
+  } else if (i == 2) {
+    action.addEventListener("click", function() {
+      if (!moved) {
+        moveSelected = true;
+        this.style.backgroundColor = "red";
+      }
+    });
+  }
   actions.push(action);
   actionHUD.appendChild(action);
 }
