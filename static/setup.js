@@ -54,6 +54,8 @@ for (var i = 1; i <= 4; i++) {
   var btnHolder = document.createElement("DIV");
   btnHolder.setAttribute("style", "text-align: center; padding-top: 5px");
   loginBtn.innerHTML = "Login";
+  loginBtn.id = i;
+  loginBtn.addEventListener("click", function() { login(parseInt(this.id)); });
   btnHolder.appendChild(loginBtn);
   player.appendChild(btnHolder);
 

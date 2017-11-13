@@ -2,10 +2,11 @@
   <head>
     <title>A Multiplayer Game</title>
     <link rel="stylesheet" href="StyleSheets/css/style.css"/>
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body oncontextmenu="return false;">
     <div class="wrapper">
-      <h1>Game</h1>
+      <h1 id=Game>Game</h1>
       <div class="status"></div>
       <div class="board"></div>
       <div class="log"></div>
@@ -13,5 +14,6 @@
       <div class="inventory"></div>
     </div>
   </body>
-  <script src="static/setup.js"></script>
+  <script src="/static/game.js"></script>
+  <script src="/static/setup.js"></script>
 </html>
