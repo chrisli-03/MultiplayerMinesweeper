@@ -32,7 +32,11 @@ for (var i = 1; i <= 40; i++) {
 
     cell.id = "" + i + " " + j;
     cell.className = "cell";
-    cell.addEventListener("click", function() { clearSelection(); this.style.backgroundColor = "red"; });
+    cell.addEventListener("click", function() {
+      if (moveSelected) {
+        sendMove(this.id);
+      }
+    });
     row.push(cell);
     board.appendChild(cell);
   }
@@ -40,7 +44,7 @@ for (var i = 1; i <= 40; i++) {
 }
 
 var players = [];
-var playerColors = ["#FF0000", "#00FF00", "#0000FF", "#FF00FF"];
+var playerColors = ["#FF0000", "#00FF00", "#00FFFF", "#FF00FF"];
 for (var i = 1; i <= 4; i++) {
   var player = document.createElement("DIV");
   player.setAttribute("style", "box-shadow: 0px 0px 0px 1px " + playerColors[i-1] + " inset;"
@@ -99,3 +103,13 @@ for (var i = 1; i <= 2; i++) {
   actions.push(action);
   actionHUD.appendChild(action);
 }
+
+document.getElementById('Game').addEventListener("click", function() {
+  socket.emit('game', function(rs) {
+    if (rs == 1) {
+      alert("At least 1 player should login to start a game");
+    } else if (rs == 2) {
+      alert("Game already started");
+    }
+  });
+});

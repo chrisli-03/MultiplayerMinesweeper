@@ -20,140 +20,72 @@ server.listen(8000, function() {
   console.log('Starting server on port 8000');
 });
 
-var playerColors = ["#FF0000", "#00FF00", "#0000FF", "#FF00FF"];
-var players = {}; // All created characters
+var game = false;
+
+var playerColors = ["#FF0000", "#00FF00", "#00FFFF", "#FF00FF"];
+var players = [];
+var clients = {};
 for (var i = 0; i < 4; i++) {
-  players[i] = {
+  var player = {
     Id: "",
     HP: 100,
-    x: 0,
-    y: 0,
+    x: -1,
+    y: -1,
     color: playerColors[i],
     status: 'idle',
     online: false
   };
+  players.push(player);
 }
 
-/*
-function isValidPosForMine(row, col) {
-  if (row == 0) {
-    if (col == 0) {
-      if ((board[row+1][col] != "mine")
-          ||(board[row+1][col+1] != "mine")
-          ||(board[row][col+1] != "mine")) {
-            return true;
-          }
-    } else if (col == 40) {
-      if ((board[row+1][col] != "mine")
-          ||(board[row+1][col-1] != "mine")
-          ||(board[row][col-1] != "mine")) {
-            return true;
-          }
-    } else {
-      if ((board[row+1][col] != "mine")
-          ||(board[row+1][col+1] != "mine")
-          ||(board[row+1][col-1] != "mine")
-          ||(board[row][col-1] != "mine")
-          ||(board[row][col+1] != "mine")) {
-            return true;
-          }
-    }
-  }
-  if (row == 40) {
-    if (col == 0) {
-      if (
-          ||(board[row][col+1] != "mine")
-          ||(board[row-1][col+1] != "mine")
-          ||(board[row-1][col] != "mine")) {
-            return true;
-          }
-    } else if (col == 40) {
-      if ((board[row][col-1] != "mine")
-          ||(board[row-1][col] != "mine")
-          ||(board[row-1][col-1] != "mine")) {
-            return true;
-          }
-    } else {
-      if ((board[row][col-1] != "mine")
-          ||(board[row][col+1] != "mine")
-          ||(board[row-1][col+1] != "mine")
-          ||(board[row-1][col] != "mine")
-          ||(board[row-1][col-1] != "mine")) {
-            return true;
-          }
-    }
-  } else {
-    if (col == 0) {
-      if ((board[row+1][col] != "mine")
-          ||(board[row+1][col+1] != "mine")
-          ||(board[row][col+1] != "mine")
-          ||(board[row-1][col+1] != "mine")
-          ||(board[row-1][col] != "mine")) {
-            return true;
-          }
-    } else if (col == 40) {
-      if ((board[row][col-1] != "mine")
-          ||(board[row+1][col-1] != "mine")
-          ||(board[row+1][col] != "mine")
-          ||(board[row-1][col] != "mine")
-          ||(board[row-1][col-1] != "mine")) {
-            return true;
-          }
-    } else {
-      if ((board[row][col-1] != "mine")
-          ||(board[row+1][col-1] != "mine")
-          ||(board[row+1][col] != "mine")
-          ||(board[row+1][col+1] != "mine")
-          ||(board[row][col+1] != "mine")
-          ||(board[row-1][col+1] != "mine")
-          ||(board[row-1][col] != "mine")
-          ||(board[row-1][col-1] != "mine")) {
-            return true;
-          }
-    }
-  }
-  return false;
-}*/
-
 var board = [];
+var sendBoard = [];
 // setup board
 function setupBoard() {
   board = [];
   // setup all cells
   for (var i = 0; i <= 41; i++) {
     var row = [];
+    var sendRow = [];
     for (var j = 0; j <= 41; j++) {
       var cell = {};
+      var sendCell = {};
       if ((i == 1)||(i == 40)||(j == 1)||(j == 40)) {
         if (((i == 1)||(i == 40))&&((j == 1)||(j == 40))) {
           cell = {
             player: "",
             tile: "none",
-            breathe: 3
+            breathe: 3,
+            open: false
           }
         } else if ((i == 1)||(i == 40)) {
           cell = {
             player: "",
             tile: "none",
-            breathe: 5
+            breathe: 5,
+            open: false
           }
         } else if ((j == 1)||(j == 40)) {
           cell = {
             player: "",
             tile: "none",
-            breathe: 5
+            breathe: 5,
+            open: false
           }
         }
       } else {
         cell = {
           player: "",
           tile: "none",
-          breathe: 8
+          breathe: 8,
+          open: false
         }
       }
       row.push(cell);
+      sendRow.push(sendCell);
     }
     board.push(row);
+    sendBoard.push(sendRow);
   }
 
   // setup mines
@@ -184,14 +116,13 @@ function setupBoard() {
   }
 }
 
-
-
-
-var clients = {};
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
   // initiation handler
   socket.on('init', function(data) {
+    if (game) {
+      socket.emit('board', board);
+    }
     console.log(data.message);
   });
 
@@ -214,6 +145,50 @@ io.on('connection', function(socket) {
     }
   });
 
+  socket.on('move', function(id, pos, fn) {
+    var row = parseInt((pos.split(" "))[0]);
+    var col = parseInt((pos.split(" "))[1]);
+    var player = players[clients[socket.id]];
+    if (((Math.abs(row-player.x) <= 1)&&(Math.abs(col-player.y) <= 1)&&(!((Math.abs(row-player.x) == 0)&&(Math.abs(col-player.y) == 0))))
+        &&(players.every(p => ((p.color == player.color)||((p.x != row)||(p.y != col)))))) {
+      board[row][col].player = player;
+      board[row][col].open = true;
+      sendBoard[row][col] = board[row][col];
+      player.x = row;
+      player.y = col;
+      player.status = 'moved';
+      io.sockets.emit('board', sendBoard);
+      fn(true);
+    } else {
+      fn(false);
+    }
+  });
+
+  socket.on('game', function(fn) {
+    if (!game&&(Object.keys(clients).length > 0)) {
+      game = true;
+      setupBoard();
+      for (var playerId in players) {
+        if (players[playerId].online) {
+          players[playerId].x = Math.floor((Math.random() * 40) +1);
+          players[playerId].y = Math.floor((Math.random() * 40) +1);
+          while (board[players[playerId].x][players[playerId].y].tile == "mine") {
+            players[playerId].x = Math.floor((Math.random() * 40) +1);
+            players[playerId].y = Math.floor((Math.random() * 40) +1);
+          }
+          board[players[playerId].x][players[playerId].y].player = players[playerId];
+          board[players[playerId].x][players[playerId].y].open = true;
+          sendBoard[players[playerId].x][players[playerId].y] = board[players[playerId].x][players[playerId].y];
+        }
+      }
+      io.sockets.emit('board', sendBoard);
+    } else if (game) {
+      fn(2);
+    } else if (Object.keys(clients).length == 0){
+      fn(1);
+    }
+  });
+
   // disconnect handler
   socket.on('disconnect', function() {
     if (clients[socket.id] != null) {
@@ -224,8 +199,13 @@ io.on('connection', function(socket) {
   });
 });
 
-setupBoard();
 // Send state of game to all clients
 setInterval(function() {
-  io.sockets.emit('state', players, board);
-}, 1000 / 60);
+  io.sockets.emit('players', players);
+  if (game) {
+    if (players.every((p) => { return (!p.online)||(p.status == 'moved') })) {
+      players.map((p) => p.status = 'idle');
+      io.sockets.emit('newTurn');
+    }
+  }
+}, 1000 / 200);
