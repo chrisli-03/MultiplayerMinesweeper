@@ -31,6 +31,7 @@ for (var i = 0; i < 4; i++) {
     HP: 100,
     x: -1,
     y: -1,
+    safe: {},
     color: playerColors[i],
     status: 'idle',
     online: false
@@ -89,7 +90,7 @@ function setupBoard() {
   }
 
   // setup mines
-  for (var i = 0; i < 300; i++) {
+  for (var i = 0; i < 250; i++) {
     var row = Math.floor((Math.random() * 40) +1);
     var col = Math.floor((Math.random() * 40) +1);
     if ((board[row][col].breathe > 0)
@@ -113,6 +114,63 @@ function setupBoard() {
         } else {
           i--;
         }
+  }
+}
+
+function calcSafePoints(playerId) {
+  var player = players[playerId];
+  console.log(player.safe);
+  for (var key in player.safe) {
+    var arr = key.split(" ");
+    var row = arr[0];
+    var col = arr[1];
+    if (board[row][col].open) {
+      delete player.safe[key];
+    }
+  }
+
+  safePoints = [];
+  var surround = [];
+  surround.push( { x: player.x, y: player.y-1 } );
+  surround.push( { x: player.x, y: player.y+1 } );
+  surround.push( { x: player.x-1, y: player.y-1 } );
+  surround.push( { x: player.x-1, y: player.y } );
+  surround.push( { x: player.x-1, y: player.y+1 } );
+  surround.push( { x: player.x+1, y: player.y-1 } );
+  surround.push( { x: player.x+1, y: player.y } );
+  surround.push( { x: player.x+1, y: player.y+1 } );
+
+  for (var i = 0; i < 8; i++) {
+    var row = surround[i].x;
+    var col = surround[i].y;
+    var key = "" + row + " " + col;
+    if ((row == 1)||(row == 40)||(col == 1)||(col == 40)) {
+      if (((row == 1)||(row == 40))&&((col == 1)||(col == 40))) {
+        if ((board[row][col].breathe == 3)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+          if (player.safe[key] == null) {
+            player.safe[key] = surround[i];
+          }
+        }
+      } else if ((row == 1)||(row == 40)) {
+        if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+          if (player.safe[key] == null) {
+            player.safe[key] = surround[i];
+          }
+        }
+      } else if ((col == 1)||(col == 40)) {
+        if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+          if (player.safe[key] == null) {
+            player.safe[key] = surround[i];
+          }
+        }
+      }
+    } else {
+      if ((board[row][col].breathe == 8)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+        if (player.safe[key] == null) {
+          player.safe[key] = surround[i];
+        }
+      }
+    }
   }
 }
 
@@ -158,6 +216,11 @@ io.on('connection', function(socket) {
       player.y = col;
       player.status = 'moved';
       io.sockets.emit('board', sendBoard);
+      for (var i = 0; i < 4; i++) {
+        if (players[i].online&&(players[i].x > 0)&&(players[i].y > 0)) {
+          calcSafePoints(i);
+        }
+      }
       fn(true);
     } else {
       fn(false);
@@ -182,6 +245,11 @@ io.on('connection', function(socket) {
         }
       }
       io.sockets.emit('board', sendBoard);
+      for (var i = 0; i < 4; i++) {
+        if (players[i].online&&(players[i].x > 0)&&(players[i].y > 0)) {
+          calcSafePoints(i);
+        }
+      }
     } else if (game) {
       fn(2);
     } else if (Object.keys(clients).length == 0){

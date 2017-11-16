@@ -44,6 +44,10 @@ socket.on('players', function(p) {
     if (p[id].x > -1) {
       var cell = document.getElementById("" + p[id].x + " " + p[id].y);
       cell.style.backgroundColor = p[id].color;
+      for (var key in p[id].safe) {
+        console.log(key);
+        document.getElementById(key).style.backgroundColor = "yellow";
+      }
     }
   }
 });
@@ -79,7 +83,6 @@ socket.on('board', function(b) {
           }
         } else {
           if (b[i][j].open) {
-            console.log(b[i][j].breathe);
             cell.innerHTML = 8-(b[i][j].breathe);
             cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
           }
