@@ -38,22 +38,7 @@ function sendMove(pos) {
   });
 }
 
-socket.on('players', function(p) {
-  for (var id in p) {
-    document.getElementById(parseInt(id)+1).disabled = (p[id].online)?true:false;
-    if (p[id].x > -1) {
-      var cell = document.getElementById("" + p[id].x + " " + p[id].y);
-      cell.style.backgroundColor = p[id].color;
-      for (var key in p[id].safe) {
-        console.log(key);
-        document.getElementById(key).style.backgroundColor = "yellow";
-      }
-    }
-  }
-});
-
-socket.on('board', function(b) {
-  clearSelection();
+function drawBoard(b) {
   for (var i = 1; i < 41; i++) {
     for (var j = 1; j < 41; j++) {
       var cell = document.getElementById("" + i + " " +j);
@@ -90,6 +75,40 @@ socket.on('board', function(b) {
       }
     }
   }
+}
+
+socket.on('newGame', function(b) {
+  clearText();
+  clearSelection();
+  drawBoard(b);
+  moved = false;
+});
+
+socket.on('players', function(p) {
+  for (var id in p) {
+    document.getElementById(parseInt(id)+1).disabled = (p[id].online)?true:false;
+    if (p[id].x > -1) {
+      var cell = document.getElementById("" + p[id].x + " " + p[id].y);
+      cell.style.backgroundColor = p[id].color;
+      for (var key in p[id].safe) {
+        document.getElementById(key).style.backgroundColor = "yellow";
+      }
+    }
+    var x = parseInt(id)+1;
+    document.getElementById("Player"+x).innerHTML = "Player: " + "</br>"
+                                                    + "HP: " + p[id].HP + "</br>"
+                                                    + "Upgrade: " + "</br>"
+                                                    + "&nbsp&nbspSword: x0" + "</br>"
+                                                    + "&nbsp&nbspSpear: x0" + "</br>"
+                                                    + "&nbsp&nbspBow: x0" + "</br>"
+                                                    + "&nbsp&nbspBoots: x0" + "</br>"
+                                                    + "&nbsp&nbspSpike: x0" + "</br>";
+  }
+});
+
+socket.on('board', function(b) {
+  clearSelection();
+  drawBoard(b);
 });
 
 socket.on('newTurn', function() {

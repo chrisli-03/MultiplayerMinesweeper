@@ -18,6 +18,15 @@ function clearSelection() {
   }
 }
 
+function clearText() {
+  for (var i = 0; i < cells.length; i++) {
+    for (var j = 0; j < cells[i].length; j++) {
+      cells[i][j].style.boxShadow = "0px 0px 0px 1px grey inset";
+      cells[i][j].innerHTML = "";
+    }
+  }
+}
+
 var cells = []; // cell[i][j] = ith row, jth column
 for (var i = 1; i <= 40; i++) {
   var row = [];
@@ -46,8 +55,9 @@ for (var i = 1; i <= 40; i++) {
 var players = [];
 var playerColors = ["#FF0000", "#00FF00", "#00FFFF", "#FF00FF"];
 for (var i = 1; i <= 4; i++) {
+  var playerWrapper = document.createElement("DIV");
   var player = document.createElement("DIV");
-  player.setAttribute("style", "box-shadow: 0px 0px 0px 1px " + playerColors[i-1] + " inset;"
+  playerWrapper.setAttribute("style", "box-shadow: 0px 0px 0px 1px " + playerColors[i-1] + " inset;"
                               + "grid-row-start: " + i + ";"
                               + "grid-row-end: " + (i+1) + ";");
   player.innerHTML = "Player: " + "</br>"
@@ -58,6 +68,7 @@ for (var i = 1; i <= 4; i++) {
                       + "&nbsp&nbspBow: x0" + "</br>"
                       + "&nbsp&nbspBoots: x0" + "</br>"
                       + "&nbsp&nbspSpike: x0" + "</br>";
+  player.id = "Player"+i;
   var loginBtn = document.createElement("BUTTON");
   var btnHolder = document.createElement("DIV");
   btnHolder.setAttribute("style", "text-align: center; padding-top: 5px");
@@ -65,10 +76,11 @@ for (var i = 1; i <= 4; i++) {
   loginBtn.id = i;
   loginBtn.addEventListener("click", function() { login(parseInt(this.id)); });
   btnHolder.appendChild(loginBtn);
-  player.appendChild(btnHolder);
+  playerWrapper.appendChild(player);
+  playerWrapper.appendChild(btnHolder);
 
   players.push(player);
-  playerHUD.appendChild(player);
+  playerHUD.appendChild(playerWrapper);
 }
 
 var actions = [];
@@ -110,6 +122,9 @@ document.getElementById('Game').addEventListener("click", function() {
       alert("At least 1 player should login to start a game");
     } else if (rs == 2) {
       alert("Game already started");
+    } else if (rs == 0){
+      clearSelection();
+      clearText();
     }
   });
 });

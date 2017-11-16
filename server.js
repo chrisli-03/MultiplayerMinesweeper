@@ -44,6 +44,7 @@ var sendBoard = [];
 // setup board
 function setupBoard() {
   board = [];
+  sendBoard = [];
   // setup all cells
   for (var i = 0; i <= 41; i++) {
     var row = [];
@@ -119,7 +120,6 @@ function setupBoard() {
 
 function calcSafePoints(playerId) {
   var player = players[playerId];
-  console.log(player.safe);
   for (var key in player.safe) {
     var arr = key.split(" ");
     var row = arr[0];
@@ -198,19 +198,39 @@ io.on('connection', function(socket) {
 
   // attack handler
   socket.on('attack', function(id, fn) {
+    if (!game) {
+      return false;
+    }
     if ((players[id-1].online)&&(clients[socket.id] == id-1)) {
       console.log("player " + (id-1) + " attacked!");
     }
   });
 
   socket.on('move', function(id, pos, fn) {
+    if (!game) {
+      return false;
+    }
     var row = parseInt((pos.split(" "))[0]);
     var col = parseInt((pos.split(" "))[1]);
     var player = players[clients[socket.id]];
     if (((Math.abs(row-player.x) <= 1)&&(Math.abs(col-player.y) <= 1)&&(!((Math.abs(row-player.x) == 0)&&(Math.abs(col-player.y) == 0))))
-        &&(players.every(p => ((p.color == player.color)||((p.x != row)||(p.y != col)))))) {
+        &&(players.every(p => ((p.color == player.color)||((p.x != row)||(p.y != col)))))
+        &&(player.HP > 0)) {
       board[row][col].player = player;
       board[row][col].open = true;
+      if (board[row][col].tile == 'mine') {
+        player.HP = player.HP - 50;
+
+        var count = 0;
+        for (var playerId in players) {
+          if ((players[playerId].HP > 0)&&(players[playerId].online)) {
+            count++;
+          }
+        }
+        if (count == 1) {
+          game = false;
+        }
+      }
       sendBoard[row][col] = board[row][col];
       player.x = row;
       player.y = col;
@@ -233,6 +253,10 @@ io.on('connection', function(socket) {
       setupBoard();
       for (var playerId in players) {
         if (players[playerId].online) {
+          players[playerId].HP = 100;
+          players[playerId].safe = {};
+          players[playerId].status = 'idle';
+
           players[playerId].x = Math.floor((Math.random() * 40) +1);
           players[playerId].y = Math.floor((Math.random() * 40) +1);
           while (board[players[playerId].x][players[playerId].y].tile == "mine") {
@@ -250,6 +274,8 @@ io.on('connection', function(socket) {
           calcSafePoints(i);
         }
       }
+      fn(0);
+      io.sockets.emit('newGame', sendBoard);
     } else if (game) {
       fn(2);
     } else if (Object.keys(clients).length == 0){
