@@ -30,7 +30,6 @@ function sendMove(pos) {
   socket.emit("move", playerId, pos, function(rs) {
     if (rs) {
       clearSelection();
-      moved = true;
       moveSelected = false;
     } else {
       alert("you cant move there");
@@ -81,7 +80,6 @@ socket.on('newGame', function(b) {
   clearText();
   clearSelection();
   drawBoard(b);
-  moved = false;
 });
 
 socket.on('players', function(p) {
@@ -113,6 +111,5 @@ socket.on('board', function(b) {
 
 socket.on('newTurn', function() {
   clearSelection();
-  moved = false;
   moveSelected = false;
 });

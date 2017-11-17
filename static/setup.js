@@ -98,7 +98,6 @@ for (var i = 1; i <= 2; i++) {
     action.addEventListener("click", function() {
       if (!moved) {
         clearSelection();
-        moved = true;
         sendAttack();
         this.style.backgroundColor = "red";
         moveSelected = false;
