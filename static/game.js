@@ -30,36 +30,50 @@ function sendMove(pos) {
   socket.emit("move", playerId, pos, function(rs) {
     if (rs) {
       clearSelection();
-      moveSelected = false;
     } else {
-      alert("you cant move there");
+
+    }
+  });
+}
+
+function sendFlag(pos) {
+  socket.emit("flag", playerId, pos, function(rs) {
+    if (rs) {
+      clearSelection();
+    } else {
+
     }
   });
 }
 
 function drawBoard(b) {
-  for (var i = 1; i < 41; i++) {
-    for (var j = 1; j < 41; j++) {
+  for (var i = 1; i <= boardW; i++) {
+    for (var j = 1; j <= boardH; j++) {
       var cell = document.getElementById("" + i + " " +j);
       cell.style.fontSize = 11;
+      if (b[i][j].flag) {
+        cell.innerHTML = "F";
+      } else {
+        cell.innerHTML = "";
+      }
       if (b[i][j].tile == "mine") {
         if (b[i][j].open) {
           cell.innerHTML = "*";
           cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
         }
       } else {
-        if ((i == 1)||(i == 40)||(j == 1)||(j == 40)) {
-          if (((i == 1)||(i == 40))&&((j == 1)||(j == 40))) {
+        if ((i == 1)||(i == boardW)||(j == 1)||(j == boardH)) {
+          if (((i == 1)||(i == boardW))&&((j == 1)||(j == boardH))) {
             if (b[i][j].open) {
               cell.innerHTML = 3-(b[i][j].breathe);
               cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
             }
-          } else if ((i == 1)||(i == 40)) {
+          } else if ((i == 1)||(i == boardW)) {
             if (b[i][j].open) {
               cell.innerHTML = 5-(b[i][j].breathe);
               cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
             }
-          } else if ((j == 1)||(j == 40)) {
+          } else if ((j == 1)||(j == boardH)) {
             if (b[i][j].open) {
               cell.innerHTML = 5-(b[i][j].breathe);
               cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
@@ -95,21 +109,11 @@ socket.on('players', function(p) {
     var x = parseInt(id)+1;
     document.getElementById("Player"+x).innerHTML = "Player: " + "</br>"
                                                     + "HP: " + p[id].HP + "</br>"
-                                                    + "Upgrade: " + "</br>"
-                                                    + "&nbsp&nbspSword: x0" + "</br>"
-                                                    + "&nbsp&nbspSpear: x0" + "</br>"
-                                                    + "&nbsp&nbspBow: x0" + "</br>"
-                                                    + "&nbsp&nbspBoots: x0" + "</br>"
-                                                    + "&nbsp&nbspSpike: x0" + "</br>";
+                                                    + "&nbsp&nbspScore: " + p[id].score + "</br>";
   }
 });
 
 socket.on('board', function(b) {
   clearSelection();
   drawBoard(b);
-});
-
-socket.on('newTurn', function() {
-  clearSelection();
-  moveSelected = false;
 });

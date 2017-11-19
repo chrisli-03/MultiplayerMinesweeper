@@ -3,18 +3,14 @@ var actionHUD = document.getElementsByClassName("action")[0];
 var inventory = document.getElementsByClassName("inventory")[0];
 var playerHUD = document.getElementsByClassName("status")[0];
 
-var moved = false;
-var moveSelected = false;
+var boardW = 45;
+var boardH = 50;
 
 function clearSelection() {
   for (var i = 0; i < cells.length; i++) {
     for (var j = 0; j < cells[i].length; j++) {
       cells[i][j].style.backgroundColor = "white";
     }
-  }
-
-  for (var i = 0; i < actions.length; i++) {
-    actions[i].style.backgroundColor = "white";
   }
 }
 
@@ -28,9 +24,9 @@ function clearText() {
 }
 
 var cells = []; // cell[i][j] = ith row, jth column
-for (var i = 1; i <= 40; i++) {
+for (var i = 1; i <= boardW; i++) {
   var row = [];
-  for (var j = 1; j <= 40; j++) {
+  for (var j = 1; j <= boardH; j++) {
     var cell = document.createElement("DIV");
     cell.setAttribute("style", "box-shadow: 0px 0px 0px 1px grey inset;"
                                 + "grid-column-start: " + j + ";"
@@ -41,9 +37,14 @@ for (var i = 1; i <= 40; i++) {
 
     cell.id = "" + i + " " + j;
     cell.className = "cell";
-    cell.addEventListener("click", function() {
-      if (moveSelected) {
-        sendMove(this.id);
+    cell.addEventListener("mousedown", function(event) {
+      switch (event.which) {
+        case 1: // left click
+              sendMove(this.id);
+              break;
+        case 3: // right click
+              sendFlag(this.id);
+              break;
       }
     });
     row.push(cell);
@@ -62,12 +63,7 @@ for (var i = 1; i <= 4; i++) {
                               + "grid-row-end: " + (i+1) + ";");
   player.innerHTML = "Player: " + "</br>"
                       + "HP: 100" + "</br>"
-                      + "Upgrade: " + "</br>"
-                      + "&nbsp&nbspSword: x0" + "</br>"
-                      + "&nbsp&nbspSpear: x0" + "</br>"
-                      + "&nbsp&nbspBow: x0" + "</br>"
-                      + "&nbsp&nbspBoots: x0" + "</br>"
-                      + "&nbsp&nbspSpike: x0" + "</br>";
+                      + "&nbsp&nbspScore: x0" + "</br>";
   player.id = "Player"+i;
   var loginBtn = document.createElement("BUTTON");
   var btnHolder = document.createElement("DIV");
@@ -81,38 +77,6 @@ for (var i = 1; i <= 4; i++) {
 
   players.push(player);
   playerHUD.appendChild(playerWrapper);
-}
-
-var actions = [];
-var texts = ["Attack", "Move"];
-for (var i = 1; i <= 2; i++) {
-  var action = document.createElement("DIV");
-  action.setAttribute("style", "box-shadow: 0px 0px 0px 1px grey inset;"
-                              + "grid-row-start: " + i + ";"
-                              + "grid-row-end: " + (i+1) + ";"
-                              + "display: flex;align-items:center;justify-content:center;");
-  var text = document.createElement("P");
-  text.innerHTML = texts[i-1];
-  action.appendChild(text);
-  if (i == 1) {
-    action.addEventListener("click", function() {
-      if (!moved) {
-        clearSelection();
-        sendAttack();
-        this.style.backgroundColor = "red";
-        moveSelected = false;
-      }
-    });
-  } else if (i == 2) {
-    action.addEventListener("click", function() {
-      if (!moved) {
-        moveSelected = true;
-        this.style.backgroundColor = "red";
-      }
-    });
-  }
-  actions.push(action);
-  actionHUD.appendChild(action);
 }
 
 document.getElementById('Game').addEventListener("click", function() {

@@ -21,6 +21,8 @@ server.listen(8000, function() {
 });
 
 var game = false;
+var boardW = 45;
+var boardH = 50;
 
 var playerColors = ["#FF0000", "#00FF00", "#00FFFF", "#FF00FF"];
 var players = [];
@@ -29,11 +31,11 @@ for (var i = 0; i < 4; i++) {
   var player = {
     Id: "",
     HP: 100,
+    score: 0,
     x: -1,
     y: -1,
     safe: {},
     color: playerColors[i],
-    status: 'idle',
     online: false
   };
   players.push(player);
@@ -46,41 +48,25 @@ function setupBoard() {
   board = [];
   sendBoard = [];
   // setup all cells
-  for (var i = 0; i <= 41; i++) {
+  for (var i = 0; i <= (boardW+1); i++) {
     var row = [];
     var sendRow = [];
-    for (var j = 0; j <= 41; j++) {
-      var cell = {};
+    for (var j = 0; j <= (boardH+1); j++) {
+      var cell = {
+        player: "",
+        tile: "none",
+        breathe: 8,
+        flag: false,
+        open: false
+      };
       var sendCell = {};
-      if ((i == 1)||(i == 40)||(j == 1)||(j == 40)) {
-        if (((i == 1)||(i == 40))&&((j == 1)||(j == 40))) {
-          cell = {
-            player: "",
-            tile: "none",
-            breathe: 3,
-            open: false
-          }
-        } else if ((i == 1)||(i == 40)) {
-          cell = {
-            player: "",
-            tile: "none",
-            breathe: 5,
-            open: false
-          }
-        } else if ((j == 1)||(j == 40)) {
-          cell = {
-            player: "",
-            tile: "none",
-            breathe: 5,
-            open: false
-          }
-        }
-      } else {
-        cell = {
-          player: "",
-          tile: "none",
-          breathe: 8,
-          open: false
+      if ((i == 1)||(i == boardW)||(j == 1)||(j == boardH)) {
+        if (((i == 1)||(i == boardW))&&((j == 1)||(j == boardH))) {
+          cell.breathe = 3;
+        } else if ((i == 1)||(i == boardW)) {
+          cell.breathe = 5;
+        } else if ((j == 1)||(j == boardH)) {
+          cell.breathe = 5;
         }
       }
       row.push(cell);
@@ -91,9 +77,9 @@ function setupBoard() {
   }
 
   // setup mines
-  for (var i = 0; i < 250; i++) {
-    var row = Math.floor((Math.random() * 40) +1);
-    var col = Math.floor((Math.random() * 40) +1);
+  for (var i = 0; i < 350; i++) {
+    var row = Math.floor((Math.random() * boardW) +1);
+    var col = Math.floor((Math.random() * boardH) +1);
     if ((board[row][col].breathe > 0)
         &&(board[row][col+1].breathe > 1)
         &&(board[row][col-1].breathe > 1)
@@ -144,20 +130,20 @@ function calcSafePoints(playerId) {
     var row = surround[i].x;
     var col = surround[i].y;
     var key = "" + row + " " + col;
-    if ((row == 1)||(row == 40)||(col == 1)||(col == 40)) {
-      if (((row == 1)||(row == 40))&&((col == 1)||(col == 40))) {
+    if ((row == 1)||(row == boardW)||(col == 1)||(col == boardH)) {
+      if (((row == 1)||(row == boardW))&&((col == 1)||(col == boardH))) {
         if ((board[row][col].breathe == 3)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
           if (player.safe[key] == null) {
             player.safe[key] = surround[i];
           }
         }
-      } else if ((row == 1)||(row == 40)) {
+      } else if ((row == 1)||(row == boardW)) {
         if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
           if (player.safe[key] == null) {
             player.safe[key] = surround[i];
           }
         }
-      } else if ((col == 1)||(col == 40)) {
+      } else if ((col == 1)||(col == boardH)) {
         if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
           if (player.safe[key] == null) {
             player.safe[key] = surround[i];
@@ -213,9 +199,11 @@ io.on('connection', function(socket) {
     var row = parseInt((pos.split(" "))[0]);
     var col = parseInt((pos.split(" "))[1]);
     var player = players[clients[socket.id]];
-    if (((Math.abs(row-player.x) <= 1)&&(Math.abs(col-player.y) <= 1)&&(!((Math.abs(row-player.x) == 0)&&(Math.abs(col-player.y) == 0))))
+    /*if (((Math.abs(row-player.x) <= 1)&&(Math.abs(col-player.y) <= 1)&&(!((Math.abs(row-player.x) == 0)&&(Math.abs(col-player.y) == 0))))
         &&(players.every(p => ((p.color == player.color)||((p.x != row)||(p.y != col)))))
-        &&(player.HP > 0)) {
+        &&(player.HP > 0)) {*/
+
+    if ((player.HP > 0)&&(!board[row][col].open)&&(!board[row][col].flag)) {
       board[row][col].player = player;
       board[row][col].open = true;
       if (board[row][col].tile == 'mine') {
@@ -227,20 +215,54 @@ io.on('connection', function(socket) {
             count++;
           }
         }
-        if (count == 1) {
+        if (count == 0) {
           game = false;
+        }
+      } else {
+        if ((row == 1)||(row == boardW)||(col == 1)||(col == boardH)) {
+          if (((row == 1)||(row == boardW))&&((col == 1)||(col == boardH))) {
+            player.score += (3-board[row][col].breathe);
+          } else if ((row == 1)||(row == boardW)) {
+            player.score += (5-board[row][col].breathe);
+          } else if ((col == 1)||(col == boardH)) {
+            player.score += (5-board[row][col].breathe);
+          }
+        } else {
+          player.score += (8-board[row][col].breathe);
         }
       }
       sendBoard[row][col] = board[row][col];
       player.x = row;
       player.y = col;
-      player.status = 'moved';
       io.sockets.emit('board', sendBoard);
       for (var i = 0; i < 4; i++) {
         if (players[i].online&&(players[i].x > 0)&&(players[i].y > 0)) {
           calcSafePoints(i);
         }
       }
+      fn(true);
+    } else {
+      fn(false);
+    }
+  });
+
+  socket.on('flag', function(id, pos, fn) {
+    if (!game) {
+      return false;
+    }
+    var row = parseInt((pos.split(" "))[0]);
+    var col = parseInt((pos.split(" "))[1]);
+    var player = players[clients[socket.id]];
+
+    if ((player.HP > 0)&&(!board[row][col].open)) {
+      board[row][col].flag = !board[row][col].flag;
+      if (board[row][col].flag) {
+        sendBoard[row][col] = board[row][col];
+      } else {
+        var sendCell = {};
+        sendBoard[row][col] = sendCell;
+      }
+      io.sockets.emit('board', sendBoard);
       fn(true);
     } else {
       fn(false);
@@ -255,13 +277,12 @@ io.on('connection', function(socket) {
         if (players[playerId].online) {
           players[playerId].HP = 100;
           players[playerId].safe = {};
-          players[playerId].status = 'idle';
 
-          players[playerId].x = Math.floor((Math.random() * 40) +1);
-          players[playerId].y = Math.floor((Math.random() * 40) +1);
+          players[playerId].x = Math.floor((Math.random() * boardW) +1);
+          players[playerId].y = Math.floor((Math.random() * boardH) +1);
           while (board[players[playerId].x][players[playerId].y].tile == "mine") {
-            players[playerId].x = Math.floor((Math.random() * 40) +1);
-            players[playerId].y = Math.floor((Math.random() * 40) +1);
+            players[playerId].x = Math.floor((Math.random() * boardW) +1);
+            players[playerId].y = Math.floor((Math.random() * boardH) +1);
           }
           board[players[playerId].x][players[playerId].y].player = players[playerId];
           board[players[playerId].x][players[playerId].y].open = true;
@@ -296,10 +317,7 @@ io.on('connection', function(socket) {
 // Send state of game to all clients
 setInterval(function() {
   io.sockets.emit('players', players);
-  if (game) {
-    if (players.every((p) => { return (!p.online)||(p.status == 'moved') })) {
-      players.map((p) => p.status = 'idle');
-      io.sockets.emit('newTurn');
-    }
+  if (players.every(p => (!p.online))) {
+    game = false;
   }
 }, 1000 / 200);
