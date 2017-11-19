@@ -201,7 +201,7 @@ io.on('connection', function(socket) {
       board[row][col].player = player;
       board[row][col].open = true;
       if (board[row][col].tile == 'mine') {
-        //player.HP = player.HP - 50;
+        player.HP = player.HP - 50;
 
         var count = 0;
         for (var playerId in players) {
