@@ -14,16 +14,12 @@ function login(id) {
   });
 }
 
-function sendAttack() {
-  if (playerId != -1) {
-    socket.emit('attack', playerId, function(rs) {
-      if (rs) {
-        console.log('attack success');
-      } else {
-        console.log('attack failed');
-      }
-    });
-  }
+// hex to rgb function
+function hexToRGBA(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
 
 function sendMove(pos) {
@@ -59,30 +55,30 @@ function drawBoard(b) {
       if (b[i][j].tile == "mine") {
         if (b[i][j].open) {
           cell.innerHTML = "*";
-          cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
+          cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
         }
       } else {
         if ((i == 1)||(i == boardW)||(j == 1)||(j == boardH)) {
           if (((i == 1)||(i == boardW))&&((j == 1)||(j == boardH))) {
             if (b[i][j].open) {
               cell.innerHTML = 3-(b[i][j].breathe);
-              cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
             }
           } else if ((i == 1)||(i == boardW)) {
             if (b[i][j].open) {
               cell.innerHTML = 5-(b[i][j].breathe);
-              cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
             }
           } else if ((j == 1)||(j == boardH)) {
             if (b[i][j].open) {
               cell.innerHTML = 5-(b[i][j].breathe);
-              cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
             }
           }
         } else {
           if (b[i][j].open) {
             cell.innerHTML = 8-(b[i][j].breathe);
-            cell.style.boxShadow = b[i][j].player.color + " 0px 0px 0px 1px inset";
+            cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
           }
         }
       }
@@ -93,7 +89,9 @@ function drawBoard(b) {
 socket.on('newGame', function(b) {
   clearText();
   clearSelection();
-  drawBoard(b);
+  setTimeout(function() {
+    drawBoard(b);
+  }, 600);
 });
 
 socket.on('players', function(p) {
@@ -101,7 +99,7 @@ socket.on('players', function(p) {
     document.getElementById(parseInt(id)+1).disabled = (p[id].online)?true:false;
     if (p[id].x > -1) {
       var cell = document.getElementById("" + p[id].x + " " + p[id].y);
-      cell.style.backgroundColor = p[id].color;
+      cell.style.backgroundColor = hexToRGBA(p[id].color, 0.5);
       for (var key in p[id].safe) {
         document.getElementById(key).style.backgroundColor = "yellow";
       }

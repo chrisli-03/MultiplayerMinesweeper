@@ -272,11 +272,12 @@ io.on('connection', function(socket) {
       setupBoard();
       numOfOpenCells = 0;
       for (var playerId in players) {
+        players[playerId].safe = {};
+        players[playerId].x = -1;
+        players[playerId].y = -1;
+        players[playerId].HP = 100;
+        players[playerId].score = 0;
         if (players[playerId].online) {
-          players[playerId].HP = 100;
-          players[playerId].safe = {};
-          players[playerId].score = 0;
-
           players[playerId].x = Math.floor((Math.random() * boardW) +1);
           players[playerId].y = Math.floor((Math.random() * boardH) +1);
           while (board[players[playerId].x][players[playerId].y].tile == "mine") {

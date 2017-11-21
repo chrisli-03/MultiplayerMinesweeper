@@ -9,7 +9,7 @@ var boardH = 50;
 function clearSelection() {
   for (var i = 0; i < cells.length; i++) {
     for (var j = 0; j < cells[i].length; j++) {
-      cells[i][j].style.backgroundColor = "white";
+      cells[i][j].style.backgroundColor = "rgba(240, 240, 240, 0.5)";
     }
   }
 }
@@ -28,12 +28,11 @@ for (var i = 1; i <= boardW; i++) {
   var row = [];
   for (var j = 1; j <= boardH; j++) {
     var cell = document.createElement("DIV");
-    cell.setAttribute("style", "box-shadow: 0px 0px 0px 1px grey inset;"
-                                + "grid-column-start: " + j + ";"
-                                + "grid-column-end: " + (j+1) + ";"
-                                + "grid-row-start: " + i + ";"
-                                + "grid-row-end: " + (i+1) + ";");
-
+    cell.style.boxShadow = "0px 0px 0px 1px grey inset";
+    cell.style.gridColumnStart = "" + j;
+    cell.style.gridColumnEnd = "" + (j+1);
+    cell.style.gridRowStart = "" + i;
+    cell.style.gridRowEnd = "" + (i+1);
 
     cell.id = "" + i + " " + j;
     cell.className = "cell";
@@ -46,6 +45,15 @@ for (var i = 1; i <= boardW; i++) {
               sendFlag(this.id);
               break;
       }
+    });
+    cell.addEventListener("mouseover", function() {
+      this.className = "cell shine";
+    });
+    cell.addEventListener("mouseout", function () {
+      var temp = this;
+      setTimeout(function() {
+        temp.className = "cell";
+      }, 650);
     });
     row.push(cell);
     board.appendChild(cell);
@@ -88,6 +96,10 @@ document.getElementById('Game').addEventListener("click", function() {
     } else if (rs == 0){
       clearSelection();
       clearText();
+      document.getElementsByClassName('board')[0].className += ' shine';
+      setTimeout(function() {
+        document.getElementsByClassName('board')[0].className = 'board';
+      }, 550);
     }
   });
 });

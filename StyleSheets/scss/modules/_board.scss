@@ -6,15 +6,91 @@
   grid-row-start: 2;
   grid-row-end: 10;
 
+  position: relative;
   display: grid;
   grid-template-columns: repeat(50, 1fr);
   grid-template-rows: repeat(45, 1fr);
 
   padding: 3px;
 
+  overflow: hidden;
+
   div {
     display: flex;
     align-items:center;
     justify-content:center;
   }
+  background: salmon;
+  opacity: 0.7;
+}
+
+.board:after {
+  content: "";
+  position: absolute;
+  top: -300%;
+  left: -200%;
+  width: 150%;
+  height: 400%;
+  opacity: 0;
+  transform: rotate(45deg);
+
+  background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.13) 0%,
+        rgba(255, 255, 255, 0.13) 85%,
+        rgba(255, 255, 255, 0.5) 95%,
+        rgba(255, 255, 255, 0) 100%,
+        );
+}
+
+.board.shine:after {
+  opacity: 1;
+  top: -125%;
+  left: -25%;
+  transition-property: left, top, opacity;
+  transition-duration: 0.70s, 0.70s, 0.1s;
+  transition-timing-function: ease;
+}
+
+.board.shine:active:after {
+  opacity: 1;
+}
+
+.cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.cell:after {
+  content: "";
+  position: absolute;
+  top: -190%;
+  left: -200%;
+  width: 200%;
+  height: 300%;
+  opacity: 0;
+  transform: rotate(45deg);
+
+  background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.13) 0%,
+        rgba(255, 255, 255, 0.13) 75%,
+        rgba(255, 255, 255, 0.5) 90%,
+        rgba(255, 255, 255, 0) 100%,
+        );
+  transition: opacity 0.25s, left 0.5s, top 0.5s;
+  transition-timing-function: ease;
+}
+
+.cell.shine:after {
+  opacity: 1;
+  top: -80%;
+  left: -40%;
+  transition-property: left, top, opacity;
+  transition-duration: 0.60s, 0.60s, 0.1s;
+  transition-timing-function: ease;
+}
+
+.cell.shine:active:after {
+  opacity: 1;
 }
