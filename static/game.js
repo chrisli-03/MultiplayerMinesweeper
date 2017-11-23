@@ -4,14 +4,20 @@ var action = "";
 socket.emit('init', {message: 'New socket request'});
 
 function login(id) {
+  var rtn = false;
   socket.emit('login', id, function(rs) {
     if (rs) {
       //console.log("success");
       playerId = id;
+      document.getElementById("Player"+id).classList.remove("notloggedin");
+      document.getElementById(id).style.border = "2px solid " + playerColors[id-1];
+      document.getElementById(id).parentNode.classList.add("shine");
+      document.getElementById(id).classList.add("loggedin");
     } else {
       //console.log("failed");
     }
   });
+  return rtn;
 }
 
 // hex to rgb function
@@ -106,15 +112,14 @@ socket.on('newGame', function(b) {
 socket.on('players', function(p) {
   for (var id in p) {
     document.getElementById(parseInt(id)+1).disabled = (p[id].online)?true:false;
+    if (p[id].online) {
+      document.getElementById("Player"+(parseInt(id)+1)).classList.remove("notloggedin");
+    }
     if (p[id].x > -1) {
       var cell = document.getElementById("" + p[id].x + " " + p[id].y);
       cell.style.backgroundColor = hexToRGBA(p[id].color, 0.5);
       for (var key in p[id].safe) {
-        if (document.getElementById(key) == null) {
-          console.log(key);
-        } else {
-          document.getElementById(key).style.backgroundColor = "yellow";
-        }
+        document.getElementById(key).style.backgroundColor = "yellow";
       }
     }
     var x = parseInt(id)+1;

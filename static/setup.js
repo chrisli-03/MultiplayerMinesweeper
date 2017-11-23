@@ -75,15 +75,19 @@ for (var i = 1; i <= 4; i++) {
                       + "HP: 100" + "</br>"
                       + "&nbsp&nbspScore: x0" + "</br>";
   player.id = "Player"+i;
-  var loginBtn = document.createElement("BUTTON");
+  player.classList.add("notloggedin");
+  var loginBtn = document.createElement("DIV");
   var btnHolder = document.createElement("DIV");
-  btnHolder.setAttribute("style", "text-align: center; padding-top: 5px");
-  loginBtn.innerHTML = "Login";
+  loginBtn.classList.add("button");
+  btnHolder.classList.add("button_holder");
+  loginBtn.style.border = "2px solid grey";
   loginBtn.id = i;
-  loginBtn.addEventListener("click", function() { login(parseInt(this.id)); });
+  loginBtn.addEventListener("click", function() {
+    login(parseInt(this.id));
+  });
   btnHolder.appendChild(loginBtn);
-  playerWrapper.appendChild(player);
   playerWrapper.appendChild(btnHolder);
+  playerWrapper.appendChild(player);
 
   players.push(player);
   playerHUD.appendChild(playerWrapper);

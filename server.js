@@ -9,6 +9,7 @@ var io = socketIO(server);
 app.set('port', 8000);
 app.use('/static', express.static(__dirname + '/static'));
 app.use('/StyleSheets/css', express.static(__dirname + '/StyleSheets/css'));
+app.use('/icons', express.static(__dirname + '/icons'));
 
 // Routing
 app.get('/', function(request, response) {
