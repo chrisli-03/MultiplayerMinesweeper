@@ -130,33 +130,35 @@ function calcSafePoints(playerId) {
   surround.push( { x: player.x+1, y: player.y+1 } );
 
   for (var i = 0; i < 8; i++) {
-    var row = surround[i].x;
-    var col = surround[i].y;
+    var row = parseInt(surround[i].x);
+    var col = parseInt(surround[i].y);
     var key = "" + row + " " + col;
-    if ((row == 1)||(row == boardW)||(col == 1)||(col == boardH)) {
-      if (((row == 1)||(row == boardW))&&((col == 1)||(col == boardH))) {
-        if ((board[row][col].breathe == 3)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+    if ((row > 0)&&(row <= boardW)&&(col > 0)&&(col <= boardH)) {
+      if ((row == 1)||(row == boardW)||(col == 1)||(col == boardH)) {
+        if (((row == 1)||(row == boardW))&&((col == 1)||(col == boardH))) {
+          if ((board[row][col].breathe == 3)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+            if (player.safe[key] == null) {
+              player.safe[key] = surround[i];
+            }
+          }
+        } else if ((row == 1)||(row == boardW)) {
+          if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+            if (player.safe[key] == null) {
+              player.safe[key] = surround[i];
+            }
+          }
+        } else if ((col == 1)||(col == boardH)) {
+          if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
+            if (player.safe[key] == null) {
+              player.safe[key] = surround[i];
+            }
+          }
+        }
+      } else {
+        if ((board[row][col].breathe == 8)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
           if (player.safe[key] == null) {
             player.safe[key] = surround[i];
           }
-        }
-      } else if ((row == 1)||(row == boardW)) {
-        if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
-          if (player.safe[key] == null) {
-            player.safe[key] = surround[i];
-          }
-        }
-      } else if ((col == 1)||(col == boardH)) {
-        if ((board[row][col].breathe == 5)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
-          if (player.safe[key] == null) {
-            player.safe[key] = surround[i];
-          }
-        }
-      }
-    } else if ((row > 0)&&(row <= boardW)&&(col > 0)&&(col <= boardH)) {
-      if ((board[row][col].breathe == 8)&&(board[row][col].tile != "mine")&&(!board[row][col].open)) {
-        if (player.safe[key] == null) {
-          player.safe[key] = surround[i];
         }
       }
     }

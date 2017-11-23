@@ -110,7 +110,11 @@ socket.on('players', function(p) {
       var cell = document.getElementById("" + p[id].x + " " + p[id].y);
       cell.style.backgroundColor = hexToRGBA(p[id].color, 0.5);
       for (var key in p[id].safe) {
-        document.getElementById(key).style.backgroundColor = "yellow";
+        if (document.getElementById(key) == null) {
+          console.log(key);
+        } else {
+          document.getElementById(key).style.backgroundColor = "yellow";
+        }
       }
     }
     var x = parseInt(id)+1;
