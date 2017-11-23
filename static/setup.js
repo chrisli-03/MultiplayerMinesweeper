@@ -9,7 +9,7 @@ var boardH = 50;
 function clearSelection() {
   for (var i = 0; i < cells.length; i++) {
     for (var j = 0; j < cells[i].length; j++) {
-      cells[i][j].style.backgroundColor = "rgba(240, 240, 240, 0.5)";
+      cells[i][j].style.backgroundColor = "rgba(255, 255, 255, 0.15)";
     }
   }
 }
