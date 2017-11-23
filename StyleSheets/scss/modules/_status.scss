@@ -11,4 +11,10 @@
   grid-gap: 3px 3px;
 
   padding: 3px;
+
+  > div {
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
 }

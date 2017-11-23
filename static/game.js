@@ -46,7 +46,6 @@ function drawBoard(b) {
   for (var i = 1; i <= boardW; i++) {
     for (var j = 1; j <= boardH; j++) {
       var cell = document.getElementById("" + i + " " +j);
-      cell.style.fontSize = 11;
       if (b[i][j].flag) {
         cell.innerHTML = "F";
       } else {
@@ -55,30 +54,40 @@ function drawBoard(b) {
       if (b[i][j].tile == "mine") {
         if (b[i][j].open) {
           cell.innerHTML = "*";
-          cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
+          cell.classList.remove('shine');
+          cell.classList.add('open');
+          cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
         }
       } else {
         if ((i == 1)||(i == boardW)||(j == 1)||(j == boardH)) {
           if (((i == 1)||(i == boardW))&&((j == 1)||(j == boardH))) {
             if (b[i][j].open) {
               cell.innerHTML = 3-(b[i][j].breathe);
-              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
+              cell.classList.remove('shine');
+              cell.classList.add('open');
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
             }
           } else if ((i == 1)||(i == boardW)) {
             if (b[i][j].open) {
               cell.innerHTML = 5-(b[i][j].breathe);
-              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
+              cell.classList.remove('shine');
+              cell.classList.add('open');
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
             }
           } else if ((j == 1)||(j == boardH)) {
             if (b[i][j].open) {
               cell.innerHTML = 5-(b[i][j].breathe);
-              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
+              cell.classList.remove('shine');
+              cell.classList.add('open');
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
             }
           }
         } else {
           if (b[i][j].open) {
             cell.innerHTML = 8-(b[i][j].breathe);
-            cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 1px inset";
+            cell.classList.remove('shine');
+            cell.classList.add('open');
+            cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
           }
         }
       }

@@ -47,13 +47,14 @@ for (var i = 1; i <= boardW; i++) {
       }
     });
     cell.addEventListener("mouseover", function() {
-      this.className = "cell shine";
+      var temp = this;
+      if (this.className == "cell") { this.classList.add("off");
+        setTimeout(function() { temp.classList.add("shine"); }, 1); }
     });
     cell.addEventListener("mouseout", function () {
       var temp = this;
-      setTimeout(function() {
-        temp.className = "cell";
-      }, 650);
+      setTimeout(function() { temp.classList.remove("shine"); }, 650);
+      setTimeout(function() { temp.classList.remove("off"); }, 800);
     });
     row.push(cell);
     board.appendChild(cell);
@@ -66,9 +67,10 @@ var playerColors = ["#FF0000", "#00FF00", "#00FFFF", "#FF00FF"];
 for (var i = 1; i <= 4; i++) {
   var playerWrapper = document.createElement("DIV");
   var player = document.createElement("DIV");
-  playerWrapper.setAttribute("style", "box-shadow: 0px 0px 0px 1px " + playerColors[i-1] + " inset;"
-                              + "grid-row-start: " + i + ";"
-                              + "grid-row-end: " + (i+1) + ";");
+  playerWrapper.style.boxShadow = "0px 0px 0px 1px " + playerColors[i-1] + " inset";
+  playerWrapper.style.gridRowStart = "" + i;
+  playerWrapper.style.gridRowEnd = "" + (i+1);
+
   player.innerHTML = "Player: " + "</br>"
                       + "HP: 100" + "</br>"
                       + "&nbsp&nbspScore: x0" + "</br>";
