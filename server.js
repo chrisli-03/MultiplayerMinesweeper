@@ -323,7 +323,7 @@ setInterval(function() {
   if (players.every(p => (!p.online))) {
     game = false;
   }
-}, 1000 / 2);
+}, 1000 / 30);
 
 function randomEvent(playerId) {
   var score = Math.floor((Math.random() * 20) -10);

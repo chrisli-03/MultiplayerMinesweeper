@@ -62,38 +62,38 @@ function drawBoard(b) {
           cell.innerHTML = "*";
           cell.classList.remove('shine');
           cell.classList.add('open');
-          cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
+          cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.7) + " 0px 0px 0px 2px inset";
         }
       } else {
         if ((i == 1)||(i == boardW)||(j == 1)||(j == boardH)) {
           if (((i == 1)||(i == boardW))&&((j == 1)||(j == boardH))) {
             if (b[i][j].open) {
-              cell.innerHTML = 3-(b[i][j].breathe);
+              if (3-(b[i][j].breathe) > 0) { cell.innerHTML = 3-(b[i][j].breathe); }
               cell.classList.remove('shine');
               cell.classList.add('open');
-              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.7) + " 0px 0px 0px 2px inset";
             }
           } else if ((i == 1)||(i == boardW)) {
             if (b[i][j].open) {
-              cell.innerHTML = 5-(b[i][j].breathe);
+              if (5-(b[i][j].breathe) > 0) { cell.innerHTML = 5-(b[i][j].breathe); }
               cell.classList.remove('shine');
               cell.classList.add('open');
-              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.7) + " 0px 0px 0px 2px inset";
             }
           } else if ((j == 1)||(j == boardH)) {
             if (b[i][j].open) {
-              cell.innerHTML = 5-(b[i][j].breathe);
+              if (5-(b[i][j].breathe) > 0) { cell.innerHTML = 5-(b[i][j].breathe); }
               cell.classList.remove('shine');
               cell.classList.add('open');
-              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
+              cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.7) + " 0px 0px 0px 2px inset";
             }
           }
         } else {
           if (b[i][j].open) {
-            cell.innerHTML = 8-(b[i][j].breathe);
+            if (8-(b[i][j].breathe) > 0) { cell.innerHTML = 8-(b[i][j].breathe); }
             cell.classList.remove('shine');
             cell.classList.add('open');
-            cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.5) + " 0px 0px 0px 2px inset";
+            cell.style.boxShadow = hexToRGBA(b[i][j].player.color, 0.7) + " 0px 0px 0px 2px inset";
           }
         }
       }
