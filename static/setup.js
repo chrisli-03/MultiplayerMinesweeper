@@ -67,15 +67,17 @@ var playerColors = ["#FF0000", "#00FF00", "#00FFFF", "#FF00FF"];
 for (var i = 1; i <= 4; i++) {
   var playerWrapper = document.createElement("DIV");
   var player = document.createElement("DIV");
+  var playerIcon = document.createElement("DIV");
   playerWrapper.style.boxShadow = "0px 0px 0px 1px " + playerColors[i-1] + " inset";
   playerWrapper.style.gridRowStart = "" + i;
   playerWrapper.style.gridRowEnd = "" + (i+1);
 
-  player.innerHTML = "Player: " + "</br>"
-                      + "HP: 100" + "</br>"
-                      + "&nbsp&nbspScore: x0" + "</br>";
+  player.innerHTML = "HP: 2" + "</br>"
+                      + "Score: x0" + "</br>";
   player.id = "Player"+i;
   player.classList.add("notloggedin");
+  player.style.marginTop = "20px";
+  player.style.marginLeft = "10px";
   var loginBtn = document.createElement("DIV");
   var btnHolder = document.createElement("DIV");
   loginBtn.classList.add("button");
@@ -86,7 +88,12 @@ for (var i = 1; i <= 4; i++) {
     login(parseInt(this.id));
   });
   btnHolder.appendChild(loginBtn);
+
+  playerIcon.classList.add("icon");
+  playerIcon.style.backgroundImage = "url('/icons/player" + i + ".png')";
+
   playerWrapper.appendChild(btnHolder);
+  playerWrapper.appendChild(playerIcon);
   playerWrapper.appendChild(player);
 
   players.push(player);

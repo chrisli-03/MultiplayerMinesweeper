@@ -33,7 +33,7 @@ var clients = {};
 for (var i = 0; i < 4; i++) {
   var player = {
     Id: "",
-    HP: 100,
+    HP: 2,
     score: 0,
     x: -1,
     y: -1,
@@ -204,7 +204,7 @@ io.on('connection', function(socket) {
       board[row][col].player = player;
       board[row][col].open = true;
       if (board[row][col].tile == 'mine') {
-        player.HP = player.HP - 50;
+        player.HP = player.HP - 1;
 
         var count = 0;
         for (var playerId in players) {
@@ -278,7 +278,7 @@ io.on('connection', function(socket) {
         players[playerId].safe = {};
         players[playerId].x = -1;
         players[playerId].y = -1;
-        players[playerId].HP = 100;
+        players[playerId].HP = 2;
         players[playerId].score = 0;
         if (players[playerId].online) {
           players[playerId].x = Math.floor((Math.random() * boardW) +1);
@@ -323,7 +323,7 @@ setInterval(function() {
   if (players.every(p => (!p.online))) {
     game = false;
   }
-}, 1000 / 200);
+}, 1000 / 2);
 
 function randomEvent(playerId) {
   var score = Math.floor((Math.random() * 20) -10);

@@ -10,7 +10,7 @@
   padding: 3px;
   position: relative;
   overflow: hidden;
-  background: salmon;
+  background: lightsalmon;
   opacity: 0.7; }
   .board div {
     display: flex;
@@ -148,6 +148,15 @@
       transition-property: left, top, opacity;
       transition-duration: 0.70s, 0.70s, 0.1s;
       transition-timing-function: ease; }
+    .status > div .icon {
+      position: absolute;
+      width: 30%;
+      height: 0;
+      padding-bottom: 100%;
+      left: 63%;
+      top: 5%;
+      background-repeat: no-repeat;
+      background-size: contain; }
   .status > div:after {
     content: "";
     top: -50%;

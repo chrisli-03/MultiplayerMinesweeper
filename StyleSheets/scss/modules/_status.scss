@@ -88,6 +88,19 @@ $color4: rgba(255, 0, 255, 0.2);
       transition-duration: 0.70s, 0.70s, 0.1s;
       transition-timing-function: ease;
     }
+
+    .icon {
+      position: absolute;
+      width: 30%;
+      height: 0;
+      padding-bottom: 100%;
+      left: 63%;
+      top: 5%;
+
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
   }
 
   > div:after {

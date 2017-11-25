@@ -114,6 +114,10 @@ socket.on('players', function(p) {
     document.getElementById(parseInt(id)+1).disabled = (p[id].online)?true:false;
     if (p[id].online) {
       document.getElementById("Player"+(parseInt(id)+1)).classList.remove("notloggedin");
+      document.getElementById((parseInt(id)+1)).style.border = "2px solid " + playerColors[id];
+    } else {
+      document.getElementById("Player"+(parseInt(id)+1)).classList.add("notloggedin");
+      document.getElementById((parseInt(id)+1)).style.border = "2px solid grey";
     }
     if (p[id].x > -1) {
       var cell = document.getElementById("" + p[id].x + " " + p[id].y);
@@ -123,9 +127,8 @@ socket.on('players', function(p) {
       }
     }
     var x = parseInt(id)+1;
-    document.getElementById("Player"+x).innerHTML = "Player: " + "</br>"
-                                                    + "HP: " + p[id].HP + "</br>"
-                                                    + "&nbsp&nbspScore: " + p[id].score + "</br>";
+    document.getElementById("Player"+x).innerHTML = "HP: " + p[id].HP + "</br>"
+                                                    + "Score: " + p[id].score + "</br>";
   }
 });
 
