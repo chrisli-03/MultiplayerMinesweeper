@@ -201,3 +201,6 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center; }
+
+body {
+  font-family: "Comic Sans MS", normal, sans-serif; }
